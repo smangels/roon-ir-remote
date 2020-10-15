@@ -2,7 +2,8 @@
 # The Project
 
 The goal is to provide a hardware controller based on a Raspberry PI (either Zero, 3, 4) that utilizes
-a display, rotary encoder and 4 buttons in order to control a Roon Core installation in the network.
+a display, rotary encoder, some status LED and 4 buttons in order to control a Roon Core 
+installation in the network.
 
 ## Requirements
 
@@ -18,3 +19,13 @@ a display, rotary encoder and 4 buttons in order to control a Roon Core installa
 	- skip track
 	- pause
 	- mute
+* auto-detect the zone
+* let user chose the zone from a list
+* when restarting, last known zone is used
+* timeout for display backlight
+* display backlight will be enabled when touching the rotary encoder
+
+## Development Language
+
+* development language will be Python
+* documentation language will be English
