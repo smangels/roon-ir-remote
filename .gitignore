@@ -1,4 +1,4 @@
-mytokenfile
-./idea/
+.*-token*
 .idea/
 venv*/
+.built-*

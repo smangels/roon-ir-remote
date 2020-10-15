@@ -56,8 +56,11 @@ def read_as_json(path) -> Dict:
 
 
 appinfo = read_as_json('app_info.json')
-token = open('mytokenfile').read()
 
+token = open('.roon-token').read()
+if token:
+    print('found token')
+    
 api = RoonApi(appinfo, token)
 screen = RoonScreen()
 screen.update_status('connecting to Roon server....')
@@ -80,5 +83,5 @@ api.register_state_callback(RoonScreen.my_state_callback)
 screen.shutdown()
 
 # save the token for next time
-with open('mytokenfile', 'w') as f:
+with open('.roon-token', 'w') as f:
     f.write(api.token)

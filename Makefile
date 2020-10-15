@@ -1,7 +1,8 @@
 
 VENV_NAME="venv"
 
-check: venv test_roon.api.py
+.PHONY = check
+check: venv Makefile test_roon.api.py
 	echo "make check"
 	( \
 		. ${VENV_NAME}/bin/activate; \
