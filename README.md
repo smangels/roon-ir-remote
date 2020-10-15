@@ -6,8 +6,8 @@ a display, rotary encoder and 4 buttons in order to control a Roon Core installa
 
 ## Requirements
 
-* able to switch between Roon zones
-* able to display status for chosen zone
+* ability to switch between Roon zones
+* ability to display status for chosen zone
 	- status
 	- volume
 	- total length
