@@ -2,7 +2,7 @@
 # The Project
 
 The goal is to provide a hardware controller based on a Raspberry PI (either Zero, 3, 4) that utilizes
-a display, rotary encoder, some status LED and 4 buttons in order to control a Roon Core 
+a display, rotary encoder, some status LED and 4 buttons in order to control a Roon Core
 installation in the network.
 
 ## Requirements
@@ -29,3 +29,10 @@ installation in the network.
 
 * development language will be Python
 * documentation language will be English
+
+## Hardware Devices
+
+- proximity sensor, TMD2772, SMD, 8 pins, proximity and backlight sensor
+	* controls backlight intensity
+	* switches the LED backlight on when someone is in front of the sensor
+	* I2C bus, interrupt, LOW active
