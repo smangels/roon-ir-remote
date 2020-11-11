@@ -1,12 +1,13 @@
 import json
 from pathlib import Path
-from typing import Dict
 from time import sleep
+from typing import Dict
+from typing import List
 
 from roonapi import RoonApi
 
-from .roon_screen import ScreenTerminal
 from .token import RoonToken
+from .zone import RoonZone
 
 
 class RoonController(object):
@@ -17,10 +18,23 @@ class RoonController(object):
     def __init__(self, app_info: Path, token: Path = '.roon-token'):
         super(RoonController, self).__init__()
         self._info = RoonController._read_as_json(app_info)
-        token_path = Path(token)
-        token = RoonToken(token_path)
-        self._api = RoonApi(self._info, str(token))
-        self._screen = ScreenTerminal()
+        self._token_path = token
+        self._token = None
+        if token and token.exists():
+            self._token = RoonToken(token)
+        if self._token.is_empty():
+            self._api = RoonApi(self._info, token=None)
+        else:
+            self._api = RoonApi(self._info, token=self._token.to_string())
+        self._zone = None
+
+    def zones(self) -> List:
+        return self._api.zones.keys()
+
+    def get_zone(self, name: str) -> RoonZone:
+        z = self._api.zone_by_name(name)
+        zone = RoonZone(self._api, z)
+        return zone
 
     @staticmethod
     def _read_as_json(path) -> Dict:
@@ -29,30 +43,20 @@ class RoonController(object):
             _data = json.load(f)
         return _data
 
-    def run(self):
-        """
-        Initiate the display, buttons and start a forever-loop
-        """
-        self._screen.update_status('connecting to Roon server....')
-
-        # get all zones (as dict)
-        zones = self._api.zones
-
-        for zone in zones:
-            # we need the output ID for the zone
-            oid = zones[zone]['outputs'][0]['output_id']
-            volume = self._api.outputs[oid]['volume']['value']
-            self._screen.update_status('zone: {}, volume: {}'.format(zones[zone]['display_name'], volume))
-
-        # wait before shutdown
-        sleep(5)
-        # receive state updates in your callback
+    def _safe_token(self):
+        if self._api.token:
+            with self._token_path.open(mode='w') as f:
+                f.write(self._api.token)
 
     def shutdown(self):
         """
-        Shutdown the infinite loop
+        Shutdown the infinite loop, save the token
         """
-        self._screen.shutdown()
+        self._safe_token()
         self._api.stop()
-        pass
+
+    def __del__(self):
+        self._safe_token()
+        self._api.stop()
+
 
