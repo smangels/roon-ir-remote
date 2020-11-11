@@ -4,15 +4,13 @@ import logging
 import signal
 import sys
 from pathlib import Path
-from time import sleep
 
 import evdev
 from evdev import InputDevice, ecodes
 
+from app import RoonController, RoonZone, RemoteConfig
+
 INPUT_DEVICE = None
-
-from app.controller import RoonController, RoonZone
-
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(module)s.%(funcName)s: %(message)s')
 
@@ -20,6 +18,7 @@ logging.basicConfig(level=logging.DEBUG,
 def exit_handler(received_signal, frame):
     global INPUT_DEVICE
     logging.info("Signaling internal jobs to stop...")
+    sys.exit(0)
 
 
 def get_event_device_for_string(dev_name: str):
@@ -76,8 +75,12 @@ def main():
 
     logging.info('found event device: {}'.format(event_dev))
 
-    controller = RoonController(Path('app_info.json'), Path('.roon-token'))
-    zone = controller.get_zone('Wohnzimmer')
+    config = RemoteConfig(Path('app_info.json'))
+
+    controller = RoonController(config.app_info, Path('.roon-token'))
+
+    zone = controller.get_zone(config.zone)
+
     logging.info('successfully opened zone: Wohnzimmer')
 
     try:

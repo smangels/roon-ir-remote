@@ -15,9 +15,9 @@ class RoonController(object):
     Roon Controller, initiate buttons, display and RoonAPI
     """
 
-    def __init__(self, app_info: Path, token: Path = '.roon-token'):
+    def __init__(self, app_info: Dict, token: Path = '.roon-token'):
         super(RoonController, self).__init__()
-        self._info = RoonController._read_as_json(app_info)
+        self._info = app_info
         self._token_path = token
         self._token = None
         if token and token.exists():

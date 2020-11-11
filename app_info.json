@@ -1,7 +1,14 @@
 {
-    "extension_id": "python_roon_remote",
-    "display_name": "Roon IR Remote",
-    "display_version": "0.1.0",
-    "publisher": "smangelse",
-    "email": "github@mangelsen.se"
+	"roon": {
+		"zone": {
+			"name": "Wohnzimmer"
+		},
+		"app_info": {
+			"extension_id": "python_roon_remote",
+			"display_name": "Roon IR Remote",
+			"display_version": "0.1.0",
+			"publisher": "smangelse",
+			"email": "github@mangelsen.se"
+		}
+	}
 }
