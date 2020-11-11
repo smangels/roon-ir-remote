@@ -27,6 +27,8 @@ class RoonController(object):
         else:
             self._api = RoonApi(self._info, token=self._token.to_string())
         self._zone = None
+        if self._api:
+            self._safe_token()
 
     def zones(self) -> List:
         return self._api.zones.keys()

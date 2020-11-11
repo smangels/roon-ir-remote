@@ -1,19 +1,21 @@
 
 from .controller import RoonApi
 from typing import Dict
+import logging
 
 
 class RoonZone:
 
-    def __init__(self, api: RoonApi, zone: Dict):
+    def __init__(self, api: RoonApi, zone: Dict, register_callback=False):
         super(RoonZone).__init__()
         self._api = api
         self._zone = zone
-        zone_id = self._get_zone_id()
-        self._api.register_state_callback(self.callback,
-                                          event_filter=['zones_changed'],
-                                          id_filter=[zone_id]
-                                          )
+        self._zone_id = self._get_zone_id()
+        if register_callback:
+            self._api.register_state_callback(self.callback,
+                                              event_filter=['zones_changed'],
+                                              id_filter=[self._zone_id]
+                                              )
 
     def callback(self, *args, **kwargs):
         print('==> callback triggered: {}'.format(args))
@@ -29,35 +31,27 @@ class RoonZone:
 
     def pause(self):
         """Next Track"""
-        zone_id = self._get_zone_id()
-        self._api.playback_control(zone_id, "pause")
+        self._api.playback_control(self._zone_id, "pause")
 
     def stop(self):
         """Stop Player and Clear Playlist"""
-        zone_id = self._get_zone_id()
-        self._api.playback_control(zone_id, "stop")
-        pass
+        self._api.playback_control(self._zone_id, "stop")
+
+    def playpause(self):
+        self._api.playback_control(self._zone_id, "playpause")
 
     def mute(self):
-        zone_id = self._get_zone_id()
-        self._api.mute(zone_id, True)
+        self._api.mute(self._zone_id, True)
 
     def play(self):
         """Start Play with current playlist"""
-        zone_id = self._get_zone_id()
-        self._api.playback_control(zone_id, "play")
-        pass
+        self._api.playback_control(self._zone_id, "play")
 
     def skip(self):
         """Skip current title"""
-        zone_id = self._get_zone_id()
-        self._api.playback_control(zone_id, "next")
-
-    def get_now_playing(self, kind='one_line'):
-        pass
+        self._api.playback_control(self._zone_id, "next")
 
     def previous(self):
-        zone_id = self._get_zone_id()
-        self._api.playback_control(zone_id, "previous")
+        self._api.playback_control(self._zone_id, "previous")
 
 
