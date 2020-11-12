@@ -12,7 +12,6 @@ class RoonToken:
         self.token = ""
         self._path = path
         self._token = RoonToken.read_from_file(self._path)
-        self.initiated = True
 
     @staticmethod
     def read_from_file(path: Path) -> str:
@@ -29,11 +28,14 @@ class RoonToken:
     def to_string(self):
         return str(self._token)
 
-    def _safe2file(self):
+    def set(self, token: str) -> None:
+        """set the token and write"""
         with self._path.open('w') as f:
-            f.write(self._token)
+            print('==> written to file %s' % self._path)
+            f.write(token)
 
-    def __del__(self):
-        self._safe2file()
+    def __str__(self):
+        return str(self._token)
+
 
 

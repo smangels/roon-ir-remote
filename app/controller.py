@@ -20,15 +20,18 @@ class RoonController(object):
         self._info = app_info
         self._token_path = token
         self._token = None
-        if token and token.exists():
+        self._zone = None
+
+        if token:
             self._token = RoonToken(token)
+
         if self._token.is_empty():
             self._api = RoonApi(self._info, token=None)
         else:
             self._api = RoonApi(self._info, token=self._token.to_string())
-        self._zone = None
+
         if self._api:
-            self._safe_token()
+            self._token.set(self._api.token)
 
     def zones(self) -> List:
         return self._api.zones.keys()
@@ -45,20 +48,13 @@ class RoonController(object):
             _data = json.load(f)
         return _data
 
-    def _safe_token(self):
-        if self._api.token:
-            with self._token_path.open(mode='w') as f:
-                f.write(self._api.token)
-
     def shutdown(self):
         """
         Shutdown the infinite loop, save the token
         """
-        self._safe_token()
         self._api.stop()
 
     def __del__(self):
-        self._safe_token()
         self._api.stop()
 
 
