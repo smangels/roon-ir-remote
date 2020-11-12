@@ -6,8 +6,8 @@
 		"app_info": {
 			"extension_id": "python_roon_remote",
 			"display_name": "Roon IR Remote",
-			"display_version": "0.1.0",
-			"publisher": "smangelse",
+			"display_version": "0.1.1",
+			"publisher": "smangels",
 			"email": "github@mangelsen.se"
 		}
 	}
