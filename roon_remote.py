@@ -11,10 +11,12 @@ from evdev import InputDevice, ecodes
 from app import RoonController, RoonZone, RemoteConfig
 
 INPUT_DEVICE = None
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(module)s.%(funcName)s: %(message)s')
 
 
+# TODO: making variables part of the signal handler
+# TODO: stop loop over select
 def exit_handler(received_signal, frame):
     global INPUT_DEVICE
     logging.info("Signaling internal jobs to stop...")
@@ -73,7 +75,7 @@ def main():
         logging.error('Could not find any event device')
         sys.exit(1)
 
-    logging.info('found event device: {}'.format(event_dev))
+    logging.debug('found event device: {}'.format(event_dev))
 
     config = RemoteConfig(Path('app_info.json'))
 
