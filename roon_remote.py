@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 import evdev
-from evdev import InputDevice, ecodes
+from evdev import InputDevice
 
 from app import RoonController, RoonZone, RemoteConfig
 
@@ -46,6 +46,11 @@ def monitor_remote(zone: RoonZone, dev: InputDevice):
     INPUT_DEVICE = dev
     logging.debug('opening InputDevice: {}'.format(dev.name))
     for event in dev.read_loop():
+
+        if event.value != 1:
+            # ignore everything that is not KEY_DOWN
+            continue
+
         # logging.debug(str(categorize(event)))
         try:
             # logging.debug("Status: {}".format('uninitialized'))
