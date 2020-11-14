@@ -1,4 +1,8 @@
-
+"""
+Implement a Roon Remote extension that reads keybaord events
+from a FLIRC device and converts those events into transport
+commands towards a certain _Zone_ in Roon.
+"""
 # !/usr/bin/python
 import logging
 import signal
@@ -10,15 +14,12 @@ from evdev import InputDevice
 
 from app import RoonController, RoonZone, RemoteConfig
 
-INPUT_DEVICE = None
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(module)s.%(funcName)s: %(message)s')
 
 
-# TODO: making variables part of the signal handler
-# TODO: stop loop over select
-def exit_handler(received_signal, frame):
-    global INPUT_DEVICE
+def exit_handler(_received_signal, _frame):
+    """Handle SIGINT and SIGTERM signals"""
     logging.info("Signaling internal jobs to stop...")
     sys.exit(0)
 
@@ -26,25 +27,24 @@ def exit_handler(received_signal, frame):
 def get_event_device_for_string(dev_name: str):
     """Scan the Input Device tree for Flirc unit and return the device"""
     dev = None
-    logging.debug('looking for input device "{}"'.format(dev_name))
+    logging.debug('looking for input device "%s"', dev_name)
     devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
     for device in devices:
         if 'flirc Keyboard' in device.name:
             dev = device
-            logging.debug('found FLIRC device on path: {}'.format(device.name, device.path))
+            logging.debug('found device with name: "%s" on path: %s', device.name, device.path)
             break
     return dev
 
 
 def monitor_remote(zone: RoonZone, dev: InputDevice):
-    '''start an event loop in InputDevice'''
+    """start an event loop in InputDevice"""
     logging.info("Job monitorRemote started")
 
     if not dev:
         raise BaseException('could not open DEV')
-    global INPUT_DEVICE
-    INPUT_DEVICE = dev
-    logging.debug('opening InputDevice: {}'.format(dev.name))
+
+    logging.debug('opening InputDevice: %s', dev.name)
     for event in dev.read_loop():
 
         if event.value != 1:
@@ -64,12 +64,13 @@ def monitor_remote(zone: RoonZone, dev: InputDevice):
             elif event.code in [57]:
                 zone.playpause()
 
-        except Exception as e:
-            logging.error("Caught exception: %s (%s)", e , type(e))
+        except Exception as exception:
+            logging.error("Caught exception: %s (%s)", exception, type(exception))
     logging.info("Job monitorRemote stopped")
 
 
 def main():
+    """main function, initiate InputDevice and runs the forever loop"""
     logging.info("starting %s", __file__)
     signal.signal(signal.SIGINT, exit_handler)
     signal.signal(signal.SIGTERM, exit_handler)
@@ -80,7 +81,7 @@ def main():
         logging.error('Could not find any event device')
         sys.exit(1)
 
-    logging.debug('found event device: {}'.format(event_dev))
+    logging.debug('found event device: %s', event_dev)
 
     config = RemoteConfig(Path('app_info.json'))
 
@@ -88,16 +89,16 @@ def main():
 
     zone = controller.get_zone(config.zone)
 
-    logging.info('successfully opened zone: Wohnzimmer')
+    logging.info('successfully opened zone: %s', config.zone)
 
     try:
         monitor_remote(zone, event_dev)
-    except Exception as e:
-        logging.error("Critical exception: %s", e)
+    except Exception as exception:
+        logging.error("Critical exception: %s", exception)
 
     controller.shutdown()
     logging.info("terminated")
-    exit(0)
+    sys.exit(0)
 
 
 if __name__ == '__main__':

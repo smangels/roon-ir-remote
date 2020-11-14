@@ -2,12 +2,8 @@
 VENV_NAME="venv"
 
 .PHONY = check
-check: venv Makefile test_roon.api.py
-	echo "make check"
-	( \
-		. ${VENV_NAME}/bin/activate; \
-		python test_roon.api.py; \
-	)
+check: venv linter Makefile
+	@echo "==> make check DONE"
 
 venv: .built-venv
 
@@ -19,6 +15,19 @@ venv: .built-venv
 		pip install -r requirements.txt; \
 		touch $@;\
 	)
+
+.built-linter: venv requirements.txt
+	@(\
+	. venv/bin/activate; \
+	echo "=============== FLAKE8 ========================="; \
+	python -m flake8 --max-line-length 120 roon_remote.py; \
+	echo -e "==> FLAKE8 is Done\n"; \
+	echo "=============== PYLINT ========================="; \
+	python -m pylint roon_remote.py; \
+	echo "==> PYLINT is Done"; \
+	)
+
+linter: .built-linter
 
 clean:
 	rm -f .built-*
