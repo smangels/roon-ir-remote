@@ -3,3 +3,4 @@ roonapi==0.0.26
 evdev
 flake8
 pylint
+pytest
