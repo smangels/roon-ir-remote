@@ -1,3 +1,7 @@
 
-[roon]
-roon-br-livingroom.home.mangelsen.se
+all:
+  hosts:
+  children:
+    roon:
+      hosts:
+        roon-br-livingroom.home.mangelsen.se:

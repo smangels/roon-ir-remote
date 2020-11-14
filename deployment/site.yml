@@ -29,7 +29,7 @@
       git:
         repo: 'https://github.com/smangels/rasp-zero-roon-controller.git'
         dest: /opt/roon-remote
-        version: 0.1.1
+        version: release
         force: true
 
 
