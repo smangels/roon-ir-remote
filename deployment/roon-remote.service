@@ -1,0 +1,17 @@
+
+[Unit]
+Description=Roon IR Remote Receiver
+After=multi-user.target
+
+[Service]
+Type=simple
+User=roon-remote
+Group=roon-remote
+PIDFile=/run/roon-remote.pid
+WorkingDirectory=/opt/roon-remote
+ExecStart=/usr/bin/python3 /opt/roon-remote/roon_remote.py
+ExecStop=/bin/kill -- $MAINPID
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target
