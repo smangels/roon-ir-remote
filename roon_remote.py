@@ -12,7 +12,7 @@ from pathlib import Path
 import evdev
 from evdev import InputDevice
 
-from app import RoonController, RoonZone, RemoteConfig
+from app import RoonController, RoonZone, RemoteConfig, RemoteConfigE, RemoteKeycodeMapping
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(module)s.%(funcName)s: %(message)s')
@@ -37,14 +37,14 @@ def get_event_device_for_string(dev_name: str):
     return dev
 
 
-def monitor_remote(zone: RoonZone, dev: InputDevice):
-    """start an event loop in InputDevice"""
+def monitor_remote(zone: RoonZone, dev: InputDevice, mapping: RemoteKeycodeMapping):
+    """start an event loop on InputDevice"""
     logging.info("Job monitorRemote started")
 
     if not dev:
         raise BaseException('could not open DEV')
 
-    logging.debug('opening InputDevice: %s', dev.name)
+    logging.debug('opening InputDevice: %s', dev.path)
     for event in dev.read_loop():
 
         if event.value != 1:
@@ -55,13 +55,13 @@ def monitor_remote(zone: RoonZone, dev: InputDevice):
         try:
             # logging.debug("Status: {}".format('uninitialized'))
             # logging.debug("KeyCode: {}".format(event.code))
-            if event.code in [51]:
+            if event.code in mapping.to_key_code('prev'):
                 zone.previous()
-            elif event.code in [52]:
+            elif event.code in mapping.to_key_code('skip'):
                 zone.skip()
-            elif event.code in [45]:
+            elif event.code in mapping.to_key_code('stop'):
                 zone.stop()
-            elif event.code in [57]:
+            elif event.code in mapping.to_key_code('play_pause'):
                 zone.playpause()
 
         except Exception as exception:
@@ -75,24 +75,30 @@ def main():
     signal.signal(signal.SIGINT, exit_handler)
     signal.signal(signal.SIGTERM, exit_handler)
 
-    event_dev = get_event_device_for_string('flirc Keyboard')
+    try:
+        config = RemoteConfig(Path('config/app_info.json'))
+    except RemoteConfigE as ex:
+        logging.error(ex.msg)
+        sys.exit(1)
 
+    mapping = config.key_mapping
+    logging.info(mapping.edge)
+
+    input_dev_name = "flirc Keyboard"
+    event_dev = get_event_device_for_string(input_dev_name)
     if not event_dev:
-        logging.error('Could not find any event device')
+        logging.error('Could not find any InputDevice with name: "%s"', input_dev_name)
         sys.exit(1)
 
     logging.debug('found event device: %s', event_dev)
 
-    config = RemoteConfig(Path('app_info.json'))
-
     controller = RoonController(config.app_info, Path('.roon-token'))
-
     zone = controller.get_zone(config.zone)
 
     logging.info('successfully opened zone: %s', config.zone)
 
     try:
-        monitor_remote(zone, event_dev)
+        monitor_remote(zone, event_dev, config.key_mapping)
     except Exception as exception:
         logging.error("Critical exception: %s", exception)
 

@@ -31,7 +31,6 @@ class RoonToken:
     def set(self, token: str) -> None:
         """set the token and write"""
         with self._path.open('w') as f:
-            print('==> written to file %s' % self._path)
             f.write(token)
 
     def __str__(self):

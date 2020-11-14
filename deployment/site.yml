@@ -1,0 +1,65 @@
+---
+
+- name: Network Getting Started First Playbook
+  gather_facts: false
+  hosts: roon
+  tasks:
+
+    - name: Create a group
+      group:
+        name: roon-remote
+        state: present
+
+    - name: Create a user
+      user:
+        name: roon-remote
+        comment: Roon Remote User
+        groups:
+          - roon-remote
+          - input
+
+    - name: Remove Installation Folder
+      file:
+        dest: /opt/roon-remote/
+        state: absent
+
+    - name: Git checkout
+      tags:
+        - sebman
+      git:
+        repo: 'https://github.com/smangels/rasp-zero-roon-controller.git'
+        dest: /opt/roon-remote
+        version: 0.1.1
+        force: true
+
+
+    - name: Ensure that empty token exists
+      file:
+        dest: /opt/roon-remote/.roon-token
+        state: touch
+
+    - name: Chown Installation Folder
+      file:
+        dest: /opt/roon-remote/
+        state: directory
+        recurse: true
+        owner: roon-remote
+        group: roon-remote
+        mode: '770'
+
+
+    - name: PIP install required packages
+      pip:
+        name: [ 'roonapi', 'evdev' ]
+        state: present
+
+    - name: Copy systemd service file
+      copy:
+        src: roon-remote.service
+        dest: /etc/systemd/system/roon-remote.service
+
+    - name: Enable and start the service
+      systemd:
+        name: roon-remote.service
+        daemon_reload: true
+        state: restarted
