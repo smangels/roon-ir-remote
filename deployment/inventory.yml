@@ -4,4 +4,14 @@ all:
   children:
     roon:
       hosts:
-        roon-br-livingroom.home.mangelsen.se:
+        roon-br-livingroom:
+  vars:
+    service:
+      name: roon-remote
+      user: roon-remote
+      group: roon-remote
+      groups:
+        - input
+        - roon-remote
+    installation:
+      folder: /opt/roon-remote

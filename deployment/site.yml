@@ -5,48 +5,49 @@
   hosts: roon
   tasks:
 
+    - name: Debug - zone name
+      debug:
+        msg: "{{ zone_name }}"
+
     - name: Create a group
       group:
-        name: roon-remote
+        name: "{{ service.group }}"
         state: present
+
+    - name: Ensure service has been stopped
+      ignore_errors: yes
+      systemd:
+        name: "{{ service.name }}.service"
+        state: stopped
+        enabled: false
+
 
     - name: Create a user
       user:
-        name: roon-remote
+        name: "{{ service.user }}"
         comment: Roon Remote User
-        groups:
-          - roon-remote
-          - input
+        groups: "{{ service.groups }}"
 
     - name: Remove Installation Folder
       file:
-        dest: /opt/roon-remote/
+        dest: "{{ installation.folder }}/"
         state: absent
 
     - name: Git checkout
-      tags:
-        - sebman
       git:
         repo: 'https://github.com/smangels/rasp-zero-roon-controller.git'
-        dest: /opt/roon-remote
+        dest: "{{ installation.folder }}"
         version: release
         force: true
 
-
-    - name: Ensure that empty token exists
-      file:
-        dest: /opt/roon-remote/.roon-token
-        state: touch
-
     - name: Chown Installation Folder
       file:
-        dest: /opt/roon-remote/
+        dest: "{{ installation.folder }}"
         state: directory
         recurse: true
-        owner: roon-remote
-        group: roon-remote
+        owner: "{{ service.user }}"
+        group: "{{ service.group }}"
         mode: '770'
-
 
     - name: PIP install required packages
       pip:
@@ -55,11 +56,12 @@
 
     - name: Copy systemd service file
       copy:
-        src: roon-remote.service
-        dest: /etc/systemd/system/roon-remote.service
+        src: "{{ service.name }}.service"
+        dest: "/etc/systemd/system/{{ service.name }}.service"
 
     - name: Enable and start the service
       systemd:
-        name: roon-remote.service
+        name: "{{ service.name }}.service"
         daemon_reload: true
-        state: restarted
+        enabled: true
+        state: stopped
