@@ -7,7 +7,7 @@ all:
         roon-br-livingroom:
   vars:
     github:
-      url: https://github.com/smangels/rasp-zero-roon-controller.git
+      url: https://github.com/smangels/roon-ir-remote.git
       branch: release
     service:
       name: roon-remote
