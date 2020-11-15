@@ -6,6 +6,9 @@ all:
       hosts:
         roon-br-livingroom:
   vars:
+    github:
+      url: https://github.com/smangels/rasp-zero-roon-controller.git
+      branch: release
     service:
       name: roon-remote
       user: roon-remote

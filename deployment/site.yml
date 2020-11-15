@@ -7,7 +7,7 @@
 
     - name: Debug - zone name
       debug:
-        msg: "{{ zone_name }}"
+        msg: "{{ vars }}"
 
     - name: Create a group
       group:
@@ -35,9 +35,9 @@
 
     - name: Git checkout
       git:
-        repo: 'https://github.com/smangels/rasp-zero-roon-controller.git'
+        repo: "{{ github.url }}"
         dest: "{{ installation.folder }}"
-        version: release
+        version: "{{ github.branch }}"
         force: true
 
     - name: Chown Installation Folder
@@ -64,4 +64,4 @@
         name: "{{ service.name }}.service"
         daemon_reload: true
         enabled: true
-        state: stopped
+        state: started
