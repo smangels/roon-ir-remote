@@ -2,8 +2,10 @@
 # The Project
 
 The goals is to provide a bridge that converts received IR commands
- as keyboard events (provided by FLIRC USB device) into transport 
- commands (e.g 'play', 'pause') that are send to the Roon API. 
+ as keyboard events (provided by FLIRC USB device) into transport
+ commands (e.g 'play', 'pause') that are send to the Roon API.
+
+![architecture overview](documentation/overview.png)
 
 ## Features
 
@@ -29,12 +31,12 @@ The goals is to provide a bridge that converts received IR commands
 
 - Roon zone name can be configured in Ansible host specific variable
 - service name, user and group can be configured in host specific variables
-- mapping between key codes and transport command can be configured 
+- mapping between key codes and transport command can be configured
   in `config/app_info.json`
 
 ## Deployment
 
-Before being able to deploy the software the following steps have 
+Before being able to deploy the software the following steps have
 to be performed.
 
 - change the hostname in `inventory.yml`
@@ -51,6 +53,6 @@ to be performed.
 ```shell script
 cd deployment/
 # check the setup
-  
-$ ansible-playbook -i inventory.yml site.yml -C 
+
+$ ansible-playbook -i inventory.yml site.yml -C
 ```
