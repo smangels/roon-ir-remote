@@ -1,38 +1,56 @@
 
 # The Project
 
-The goal is to provide a hardware controller based on a Raspberry PI (either Zero, 3, 4) that utilizes
-a display, rotary encoder, some status LED and 4 buttons in order to control a Roon Core
-installation in the network.
+The goals is to provide a bridge that converts received IR commands
+ as keyboard events (provided by FLIRC USB device) into transport 
+ commands (e.g 'play', 'pause') that are send to the Roon API. 
 
-## Requirements
+## Features
 
-* ability to switch between Roon zones
-* ability to display status for chosen zone
-	- status
-	- volume
-	- total length
-	- current position
-* ability to pause all zones
-* ability to change status of a zone
-	- change volume
-	- skip track
-	- pause
-	- mute
-* auto-detect the zone
-* let user chose the zone from a list
-* when restarting, last known zone is used
-* timeout for display backlight
-* display backlight will be enabled when touching the rotary encoder
+* support Roon transport commands
+
+    - play, stop, play_pause, pause
+    - skip, previous
 
 ## Development Language
 
 * development language will be Python
 * documentation language will be English
 
+## Software Requirements
+
+- Python: __roon-api__, __evdev__
+
 ## Hardware Devices
 
-- proximity sensor, TMD2772, SMD, 8 pins, proximity and backlight sensor
-	* controls backlight intensity
-	* switches the LED backlight on when someone is in front of the sensor
-	* I2C bus, interrupt, LOW active
+- FLIRC USB device
+
+## Configuration
+
+- Roon zone name can be configured in Ansible host specific variable
+- service name, user and group can be configured in host specific variables
+- mapping between key codes and transport command can be configured 
+  in `config/app_info.json`
+
+## Deployment
+
+Before being able to deploy the software the following steps have 
+to be performed.
+
+- change the hostname in `inventory.yml`
+- add a new file that uses the same hostname as added above
+- change the variables accordingly
+- create a profile in `~/.ssh/config` that matches the hostname above
+- copy your __public__ SSH key to the deployment target
+- install the following requirements onto the target machine
+
+    * python3, python3-pip
+    * pip: setuptools
+    * git
+
+```shell script
+cd deployment/
+# check the setup
+  
+$ ansible-playbook -i inventory.yml site.yml -C 
+```
