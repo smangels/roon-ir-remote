@@ -11,6 +11,7 @@ class RoonZone:
         self._api = api
         self._zone = zone
         self._zone_id = self._get_zone_id()
+        self._output_id = self._get_output_id()
         if register_callback:
             self._api.register_state_callback(self.callback,
                                               event_filter=['zones_changed'],
@@ -29,6 +30,12 @@ class RoonZone:
     def _get_zone_id(self):
         return self._zone['zone_id']
 
+    def _get_output_id(self):
+        if len(self._zone['outputs']) <= 0:
+            logging.error("no output available")
+            return None
+        return self._zone['outputs'][0]['output_id']
+
     def pause(self):
         """Next Track"""
         self._api.playback_control(self._zone_id, "pause")
@@ -39,9 +46,6 @@ class RoonZone:
 
     def playpause(self):
         self._api.playback_control(self._zone_id, "playpause")
-
-    def mute(self):
-        self._api.mute(self._zone_id, True)
 
     def play(self):
         """Start Play with current playlist"""
@@ -55,7 +59,12 @@ class RoonZone:
         self._api.playback_control(self._zone_id, "previous")
 
     def volume_up(self, value: int = 5):
-        self._api.change_volume(self._zone_id, value, method="relative")
+        self._api.mute(self._output_id, False)
+        self._api.change_volume(self._output_id, value, method="relative_step")
 
     def volume_down(self, value: int = 5):
-        self._api.change_volume(self._zone_id, ((-1) * value), method="relative")
+        self._api.mute(self._output_id, False)
+        self._api.change_volume(self._output_id, -1 * value, method="relative_step")
+
+    def mute(self):
+        self._api.mute(self._output_id, True)
