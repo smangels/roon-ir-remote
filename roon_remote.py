@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 import evdev
-from evdev import InputDevice
+from evdev import InputDevice, categorize
 
 from app import RoonController, RoonZone, RemoteConfig, RemoteConfigE, RemoteKeycodeMapping
 
@@ -51,7 +51,7 @@ def monitor_remote(zone: RoonZone, dev: InputDevice, mapping: RemoteKeycodeMappi
             # ignore everything that is not KEY_DOWN
             continue
 
-        # logging.debug(str(categorize(event)))
+        logging.debug(str(categorize(event)))
         try:
             # logging.debug("Status: {}".format('uninitialized'))
             # logging.debug("KeyCode: {}".format(event.code))
@@ -64,11 +64,14 @@ def monitor_remote(zone: RoonZone, dev: InputDevice, mapping: RemoteKeycodeMappi
             elif event.code in mapping.to_key_code('play_pause'):
                 zone.playpause()
             elif event.code in mapping.to_key_code('vol_up'):
+                print("==> Volume UP")
                 zone.volume_up(5)
             elif event.code in mapping.to_key_code('vol_down'):
+                print("==> Volume DOWN")
                 zone.volume_down(5)
             elif event.code in mapping.to_key_code('mute'):
                 zone.mute()
+                print('MUTE')
 
             print(repr(event.code))
 
