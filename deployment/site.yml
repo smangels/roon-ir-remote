@@ -49,6 +49,14 @@
         group: "{{ service.group }}"
         mode: '770'
 
+    - name: Generate template
+      template:
+        dest: "{{ installation.folder }}/app_info.json"
+        src: "app_info.json.j2"
+        owner: "{{ service.user }}"
+        group: "{{ service.group }}"
+        mode: '770'
+
     - name: PIP install required packages
       pip:
         name: [ 'roonapi', 'evdev' ]

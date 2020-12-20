@@ -1,2 +1,3 @@
 ---
-zone_name: "Wohnzimmer"
+roon:
+  zone_name: "Wohnzimmer"

@@ -5,10 +5,11 @@ all:
     roon:
       hosts:
         roon-br-livingroom:
+        roon-br-children:
   vars:
     github:
       url: https://github.com/smangels/roon-ir-remote.git
-      branch: release
+      branch: main
     service:
       name: roon-remote
       user: roon-remote

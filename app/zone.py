@@ -54,4 +54,8 @@ class RoonZone:
     def previous(self):
         self._api.playback_control(self._zone_id, "previous")
 
+    def volume_up(self, value: int = 5):
+        self._api.change_volume(self._zone_id, value, method="relative")
 
+    def volume_down(self, value: int = 5):
+        self._api.change_volume(self._zone_id, ((-1) * value), method="relative")

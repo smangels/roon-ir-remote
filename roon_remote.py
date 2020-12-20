@@ -63,6 +63,14 @@ def monitor_remote(zone: RoonZone, dev: InputDevice, mapping: RemoteKeycodeMappi
                 zone.stop()
             elif event.code in mapping.to_key_code('play_pause'):
                 zone.playpause()
+            elif event.code in mapping.to_key_code('vol_up'):
+                zone.volume_up(5)
+            elif event.code in mapping.to_key_code('vol_down'):
+                zone.volume_down(5)
+            elif event.code in mapping.to_key_code('mute'):
+                zone.mute()
+
+            print(repr(event.code))
 
         except Exception as exception:
             logging.error("Caught exception: %s (%s)", exception, type(exception))
