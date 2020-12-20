@@ -84,7 +84,7 @@ def main():
     signal.signal(signal.SIGTERM, exit_handler)
 
     try:
-        config = RemoteConfig(Path('config/app_info.json'))
+        config = RemoteConfig(Path('app_info.json'))
     except RemoteConfigE as ex:
         logging.error(ex.msg)
         sys.exit(1)
