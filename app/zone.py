@@ -68,3 +68,10 @@ class RoonZone:
 
     def mute(self):
         self._api.mute(self._output_id, True)
+
+    def play_playlist(self, playlist_name):
+        self._api.mute(self._output_id, False)
+        self._api.change_volume(self._output_id, 20, method="absolute")
+        self._api.play_playlist(self._zone_id, playlist_title=playlist_name)
+        self._api.shuffle(self._zone_id, shuffle=False)
+        self._api.repeat(self._zone_id, repeat=True)
