@@ -9,7 +9,7 @@ all:
   vars:
     github:
       url: https://github.com/smangels/roon-ir-remote.git
-      branch: main
+      branch: release
     service:
       name: roon-remote
       user: roon-remote
