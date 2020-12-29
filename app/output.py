@@ -1,19 +1,21 @@
+"""Class handling the logic and commands provided by an Roon output!"""
+import json
+import logging
+from typing import Dict, List
 
 from .controller import RoonApi
-from typing import Dict, List
-import logging
-import json
 
 logger = logging.getLogger('zone')
 
 
 class RoonOutputE(BaseException):
-
+    """Basic Class for Output """
     def __init__(self, msg):
         self.msg = msg
 
 
 class RoonOutput:
+    """Implment logic for Roon Outputs"""
 
     EVENT_FILTER = ['outputs_changed', 'zones_changed']
 
@@ -29,12 +31,13 @@ class RoonOutput:
         self._oid = oid
         if register_callback:
             logger.debug('enabling callback for zone updates')
-            self._api.register_state_callback(self.callback,
+            self._api.register_state_callback(self._callback,
                                               event_filter=self.EVENT_FILTER,
                                               id_filter=None)
         logger.debug('instantiated RoonOutput {}'.format(output_name))
 
-    def callback(self, event: str, ids_changed: List):
+    def _callback(self, event: str, ids_changed: List):
+        """Callback for debugging purposes."""
         logger.debug('==> callback triggered: {} => {}'.format(event, repr(ids_changed)))
         if 'zones_changed' in event:
             for zid_changed in ids_changed:
@@ -51,13 +54,23 @@ class RoonOutput:
 
     @property
     def zone_id(self):
-        return self._api.outputs[self._oid]['zone_id']
+        if self._oid and self._oid in self._api.outputs.keys():
+            return self._api.outputs[self._oid]['zone_id']
+        else:
+            logger.error('failed to retrieve the ZID for given OID "{}"'.format(self._oid))
+            return None
 
-    def status(self):
-        """retrieve the current status of a zone"""
-        pass
+    @property
+    def state(self):
+        z = self.zone_id
+        if z and z in self._api.zones.keys():
+            return self._api.zones[z]['state']
+        else:
+            logger.error('failed to retrieve the state for OID {}'.format(self._oid))
+            return None
 
     def _get_output_id(self, name: str):
+        """Try to find the OID based on names."""
         logger.debug('finding output "{}"'.format(name))
         o = self._api.output_by_name(name)
         if not o:
@@ -69,6 +82,7 @@ class RoonOutput:
         return oid
 
     def _get_output(self) -> Dict:
+        """Simplify the access to the output dictionary for current OID"""
         if self._oid in self._api.outputs.keys():
             return self._api.outputs[self._oid]
         else:
@@ -89,6 +103,7 @@ class RoonOutput:
     def stop(self):
         """Stop Player and Clear Playlist"""
         self._api.playback_control(self.zone_id, "stop")
+        self._api.seek(self.zone_id, 0)
 
     def playpause(self):
         self._api.playback_control(self.zone_id, "playpause")
@@ -112,12 +127,20 @@ class RoonOutput:
         self._api.mute(self._oid, False)
         self._api.change_volume(self._oid, -1 * value, method="relative_step")
 
-    def mute(self):
-        self._api.mute(self._oid, True)
+    def mute(self, enabled=False):
+        self._api.mute(self._oid, enabled)
 
-    def play_playlist(self, playlist_name):
+    def play_playlist(self, playlist_name, volume: int = 20):
         self._api.mute(self._oid, False)
-        self._api.change_volume(self._oid, 20, method="absolute")
+        self._api.change_volume(self._oid, volume, method="absolute")
         self._api.play_playlist(self.zone_id, playlist_title=playlist_name)
         self._api.shuffle(self.zone_id, shuffle=False)
         self._api.repeat(self.zone_id, repeat=True)
+
+    def is_muted(self) -> bool:
+        """Return True if output is muted, otherwise False."""
+        o = self._get_output()
+        if 'volume' in o.keys():
+            return o['volume']['is_muted']
+        else:
+            return False

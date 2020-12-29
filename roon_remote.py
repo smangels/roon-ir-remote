@@ -15,40 +15,41 @@ from evdev import InputDevice
 from app import RoonController, RoonOutput, RemoteConfig, RemoteConfigE, RemoteKeycodeMapping
 
 logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(levelname)s %(module)s.%(funcName)s: %(message)s')
+                    format='%(asctime)s %(levelname)s %(module)s: %(message)s')
+logger = logging.getLogger('roon_remote')
 
 
 def exit_handler(_received_signal, _frame):
     """Handle SIGINT and SIGTERM signals"""
-    logging.info("Signaling internal jobs to stop...")
+    logger.info("Signaling internal jobs to stop...")
     sys.exit(0)
 
 
 def get_event_device_for_string(dev_name: str):
     """Scan the Input Device tree for Flirc unit and return the device"""
     dev = None
-    logging.debug('looking for input device "%s"', dev_name)
+    logger.debug('looking for input device "%s"', dev_name)
     devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
     if not devices:
-        logging.error('no device found, invalid permissions?')
+        logger.error('no device found, invalid permissions?')
         return None
     for device in devices:
-        logging.debug("name: %s" % device.name)
+        logger.debug("name: %s" % device.name)
         if dev_name in device.name:
             dev = device
-            logging.debug('found device with name: "%s" on path: %s', device.name, device.path)
+            logger.debug('found device with name: "%s" on path: %s', device.name, device.path)
             break
     return dev
 
 
 def monitor_remote(zone: RoonOutput, dev: InputDevice, mapping: RemoteKeycodeMapping):
     """start an event loop on InputDevice"""
-    logging.info("Job monitorRemote started")
+    logger.info("Job monitorRemote started")
 
     if not dev:
         raise BaseException('could not open DEV')
 
-    logging.debug('opening exclusively InputDevice: %s', dev.path)
+    logger.debug('opening exclusively InputDevice: %s', dev.path)
     for event in dev.read_loop():
 
         if event.value != 1:
@@ -66,26 +67,29 @@ def monitor_remote(zone: RoonOutput, dev: InputDevice, mapping: RemoteKeycodeMap
             elif event.code in mapping.to_key_code('stop'):
                 zone.stop()
             elif event.code in mapping.to_key_code('play_pause'):
-                zone.playpause()
+                if zone.state == "playing":
+                    zone.pause()
+                else:
+                    zone.play()
             elif event.code in mapping.to_key_code('vol_up'):
                 zone.volume_up(5)
             elif event.code in mapping.to_key_code('vol_down'):
                 zone.volume_down(5)
             elif event.code in mapping.to_key_code('mute'):
-                zone.mute()
+                zone.mute(not zone.is_muted())
             elif event.code in mapping.to_key_code('fall_asleep'):
                 zone.play_playlist('wellenrauschen')
 
-            logging.debug("Received Code: %s", repr(event.code))
+            logger.debug("Received Code: %s", repr(event.code))
 
         except Exception as exception:
             logging.error("Caught exception: %s (%s)", exception, type(exception))
-    logging.info("Job monitorRemote stopped")
+    logger.info("Job monitorRemote stopped")
 
 
 def main():
     """main function, initiate InputDevice and runs the forever loop"""
-    logging.info("starting %s", __file__)
+    logger.info("starting %s", __file__)
     signal.signal(signal.SIGINT, exit_handler)
     signal.signal(signal.SIGTERM, exit_handler)
 
@@ -98,7 +102,7 @@ def main():
     mapping = config.key_mapping
     logging.info(mapping.edge)
 
-    input_dev_name = "flirc"
+    input_dev_name = "flirc Keyboard"
     event_dev = get_event_device_for_string(input_dev_name)
     if not event_dev:
         logging.error('Could not find any InputDevice with name: "%s"', input_dev_name)

@@ -29,7 +29,7 @@ The goals is to provide a bridge that converts received IR commands
 
 ## Configuration
 
-- Roon zone name can be configured in Ansible host specific variable
+- Roon zone name can be configured as Ansible host specific variable
 - service name, user and group can be configured in host specific variables
 - mapping between key codes and transport command can be configured
   in `config/app_info.json`

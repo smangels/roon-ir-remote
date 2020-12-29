@@ -42,7 +42,7 @@ class RoonController(object):
         return self._api.zones.keys()
 
     def get_output(self, name: str) -> RoonOutput:
-        return RoonOutput(self._api, name, True)
+        return RoonOutput(self._api, name, register_callback=False)
 
     @staticmethod
     def _read_as_json(path) -> Dict:

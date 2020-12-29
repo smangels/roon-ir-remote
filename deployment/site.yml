@@ -21,7 +21,6 @@
         state: stopped
         enabled: false
 
-
     - name: Create a user
       user:
         name: "{{ service.user }}"
