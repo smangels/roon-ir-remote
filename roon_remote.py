@@ -12,9 +12,9 @@ from pathlib import Path
 import evdev
 from evdev import InputDevice
 
-from app import RoonController, RoonZone, RemoteConfig, RemoteConfigE, RemoteKeycodeMapping
+from app import RoonController, RoonOutput, RemoteConfig, RemoteConfigE, RemoteKeycodeMapping
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(module)s.%(funcName)s: %(message)s')
 
 
@@ -29,22 +29,26 @@ def get_event_device_for_string(dev_name: str):
     dev = None
     logging.debug('looking for input device "%s"', dev_name)
     devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+    if not devices:
+        logging.error('no device found, invalid permissions?')
+        return None
     for device in devices:
-        if 'flirc Keyboard' in device.name:
+        logging.debug("name: %s" % device.name)
+        if dev_name in device.name:
             dev = device
             logging.debug('found device with name: "%s" on path: %s', device.name, device.path)
             break
     return dev
 
 
-def monitor_remote(zone: RoonZone, dev: InputDevice, mapping: RemoteKeycodeMapping):
+def monitor_remote(zone: RoonOutput, dev: InputDevice, mapping: RemoteKeycodeMapping):
     """start an event loop on InputDevice"""
     logging.info("Job monitorRemote started")
 
     if not dev:
         raise BaseException('could not open DEV')
 
-    logging.debug('opening InputDevice: %s', dev.path)
+    logging.debug('opening exclusively InputDevice: %s', dev.path)
     for event in dev.read_loop():
 
         if event.value != 1:
@@ -94,21 +98,22 @@ def main():
     mapping = config.key_mapping
     logging.info(mapping.edge)
 
-    input_dev_name = "flirc Keyboard"
+    input_dev_name = "flirc"
     event_dev = get_event_device_for_string(input_dev_name)
     if not event_dev:
         logging.error('Could not find any InputDevice with name: "%s"', input_dev_name)
         sys.exit(1)
 
-    logging.debug('found event device: %s', event_dev)
+    logging.debug('found input device: %s', event_dev)
 
     controller = RoonController(config.app_info, Path('.roon-token'))
-    zone = controller.get_zone(config.zone)
-
-    logging.info('successfully opened zone: %s', config.zone)
+    output = controller.get_output(config.zone)
+    if not output:
+        logging.error('failed to find zone "{}"'.format(config.zone))
+        sys.exit(1)
 
     try:
-        monitor_remote(zone, event_dev, config.key_mapping)
+        monitor_remote(output, event_dev, config.key_mapping)
     except Exception as exception:
         logging.error("Critical exception: %s", exception)
 

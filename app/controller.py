@@ -2,11 +2,15 @@ import json
 from pathlib import Path
 from typing import Dict
 from typing import List
+import logging
 
 from roonapi import RoonApi
 
 from .token import RoonToken
-from .zone import RoonZone
+from .output import RoonOutput, RoonOutputE
+
+
+logger = logging.getLogger('roon-controller')
 
 
 class RoonController(object):
@@ -32,13 +36,13 @@ class RoonController(object):
         if self._api:
             self._token.set(self._api.token)
 
+        logger.debug('instantiated a Roon controller: %s' % self._api.core_name)
+
     def zones(self) -> List:
         return self._api.zones.keys()
 
-    def get_zone(self, name: str) -> RoonZone:
-        z = self._api.zone_by_name(name)
-        zone = RoonZone(self._api, z)
-        return zone
+    def get_output(self, name: str) -> RoonOutput:
+        return RoonOutput(self._api, name, True)
 
     @staticmethod
     def _read_as_json(path) -> Dict:

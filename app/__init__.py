@@ -1,5 +1,5 @@
 
 from .controller import RoonController
 from .token import RoonToken
-from .zone import RoonZone
+from .output import RoonOutput
 from .config import RemoteConfig, RemoteConfigE, RemoteKeycodeMapping
