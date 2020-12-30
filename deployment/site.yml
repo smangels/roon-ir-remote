@@ -28,25 +28,29 @@
         groups: "{{ service.groups }}"
 
     - name: Remove Installation Folder
+      tags: sebman
       file:
         dest: "{{ installation.folder }}/"
         state: absent
 
-    - name: Git checkout
-      git:
-        repo: "{{ github.url }}"
-        dest: "{{ installation.folder }}"
-        version: "{{ github.branch }}"
-        force: true
-
-    - name: Chown Installation Folder
+    - name: Cleanup the APP folder
+      delegate_to: localhost
+      tags: sebman
       file:
-        dest: "{{ installation.folder }}"
-        state: directory
-        recurse: true
+        state: absent
+        path: "../app/__pycache__/"
+
+    - name: Transfer the code
+      tags: sebman
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ installation.folder }}/{{ item.dest }}"
         owner: "{{ service.user }}"
         group: "{{ service.group }}"
-        mode: '770'
+        mode: "750"
+      loop:
+        - { src: '../app/', dest: 'app/' }
+        - { src: '../roon_remote.py', dest: 'roon_remote.py' }
 
     - name: Generate template
       template:
