@@ -5,6 +5,23 @@
   hosts: roon
   tasks:
 
+    - name: Apt Upgrade
+      apt: upgrade=dist force_apt_get=yes
+      tags:
+        - never
+        - upgrade
+
+    - name: Apt Update, reboot
+      reboot:
+        msg: "Reboot initiated"
+        connect_timeout: 5
+        reboot_timeout: 300
+        post_reboot_delay: 30
+        test_command: uptime
+      tags:
+        - never
+        - upgrade
+
     - name: Debug - zone name
       debug:
         msg: "{{ vars }}"
