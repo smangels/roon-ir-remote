@@ -45,20 +45,17 @@
         groups: "{{ service.groups }}"
 
     - name: Remove Installation Folder
-      tags: sebman
       file:
         dest: "{{ installation.folder }}/"
         state: absent
 
     - name: Cleanup the APP folder
       delegate_to: localhost
-      tags: sebman
       file:
         state: absent
         path: "../app/__pycache__/"
 
     - name: Transfer the code
-      tags: sebman
       copy:
         src: "{{ item.src }}"
         dest: "{{ installation.folder }}/{{ item.dest }}"
