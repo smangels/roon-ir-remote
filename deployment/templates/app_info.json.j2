@@ -1,28 +1,34 @@
 {
-	"roon": {
-		"zone": {
-			"name": "{{ roon.zone_name }}"
-		},
-		"event_mapping": {
-			"edge": "UP",
-			"codes": {
-				"prev": [51],
-				"skip": [52],
-				"stop": [45, 40, 31],
-				"play": [42],
-				"play_pause": [57, 25],
-				"mute": [66, 22],
-				"vol_up": [3, 36],
-				"vol_down": [2, 37],
-				"fall_asleep": [20]
-			}
-		},
-		"app_info": {
-			"extension_id": "python_roon_remote",
-			"display_name": "Roon IR Remote {{ roon.zone_name }}",
-			"display_version": "0.2.0",
-			"publisher": "smangels",
-			"email": "github@mangelsen.se"
-		}
-	}
+   "roon": {
+      "zone": {
+         "name": "{{ roon.zone_name }}"
+      },
+      "event_mapping": {
+{% if amplifier is defined and amplifier.enabled == true %}
+         "amplifier": {
+            "type": "{{ amplifier.type }}",
+            "init_volume_percent": {{ amplifier.init_volume_percent }}
+         },
+{% endif %}
+         "edge": "UP",
+         "codes": {
+            "prev": [51],
+            "skip": [52],
+            "stop": [45, 40, 31],
+            "play": [42],
+            "play_pause": [57, 25],
+            "mute": [66, 22],
+            "vol_up": [3, 36],
+            "vol_down": [2, 37],
+            "fall_asleep": [20]
+         }
+      },
+      "app_info": {
+         "extension_id": "python_roon_remote",
+         "display_name": "Roon IR Remote {{ roon.zone_name }}",
+         "display_version": "0.2.0",
+         "publisher": "smangels",
+         "email": "github@mangelsen.se"
+      }
+   }
 }

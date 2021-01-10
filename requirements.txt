@@ -4,3 +4,6 @@ evdev
 flake8
 pylint
 pytest
+requests
+mock
+pytest-mock

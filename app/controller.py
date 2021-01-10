@@ -7,7 +7,7 @@ import logging
 from roonapi import RoonApi
 
 from .token import RoonToken
-from .output import RoonOutput, RoonOutputE
+from .output import RoonOutput
 
 
 logger = logging.getLogger('roon-controller')

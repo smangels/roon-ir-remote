@@ -1,3 +1,7 @@
 ---
 roon:
   zone_name: "Wohnzimmer"
+amplifier:
+  enabled: true
+  type: "Yamaha"
+  init_volume_percent: 25

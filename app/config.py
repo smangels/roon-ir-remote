@@ -5,7 +5,7 @@ from typing import Dict, List
 from pathlib import Path
 import logging
 
-logging.getLogger('RemoteConfig')
+logger = logging.getLogger('RemoteConfig')
 
 
 class RemoteConfigE(BaseException):
@@ -28,7 +28,7 @@ class RemoteKeycodeMapping:
             raise RemoteConfigE('codes not found')
         self._dict = mapping_dict
         if 'edge' not in mapping_dict.keys():
-            logging.info('no "edge" config detected, setting default UP ')
+            logger.info('no "edge" config detected, setting default UP ')
             self._dict['edge'] = self.EDGE_UP
 
     @property
@@ -61,10 +61,11 @@ class RemoteConfig:
 
     def __init__(self, path_config_file: Path):
         super(RemoteConfig).__init__()
+        logger.debug(path_config_file.absolute())
         if not path_config_file.exists():
             raise RemoteConfigE('RemoteConfig, invalid path given: {}'.format(path_config_file))
         self._config = RemoteConfig._read_as_json(path_config_file)['roon']
-        logging.debug('successfully read config from %s', path_config_file)
+        logger.debug('successfully read config from %s', path_config_file)
 
     @staticmethod
     def _read_as_json(path: Path) -> Dict:

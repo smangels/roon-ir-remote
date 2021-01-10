@@ -67,6 +67,7 @@
         - { src: '../roon_remote.py', dest: 'roon_remote.py' }
 
     - name: Generate template
+      tags: sebman
       template:
         dest: "{{ installation.folder }}/app_info.json"
         src: "app_info.json.j2"
