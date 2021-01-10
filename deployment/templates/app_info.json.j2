@@ -1,7 +1,8 @@
 {
    "roon": {
       "zone": {
-         "name": "{{ roon.zone_name }}"
+         "name": "{{ roon.zone_name }}",
+         "favorite_radio_station": "{{ roon.favorite_radio_station }}"
       },
       "event_mapping": {
 {% if amplifier is defined and amplifier.enabled == true %}
@@ -20,7 +21,8 @@
             "mute": [66, 22],
             "vol_up": [3, 36],
             "vol_down": [2, 37],
-            "fall_asleep": [20]
+            "fall_asleep": [20],
+            "play_radio": [21]
          }
       },
       "app_info": {

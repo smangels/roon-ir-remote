@@ -1,6 +1,7 @@
 ---
 roon:
   zone_name: "Wohnzimmer"
+  favorite_radio_station: "Radio Paradise: Main mix"
 amplifier:
   enabled: true
   type: "Yamaha"
