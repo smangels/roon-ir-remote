@@ -2,28 +2,50 @@
 import requests
 from typing import Dict
 import logging
-
+from abc import ABC, abstractmethod
 
 logger = logging.getLogger("yamaha")
 logger.setLevel(logging.DEBUG)
 
 
-class YamahaE(BaseException):
+class AmplifierE(BaseException):
 
     def __init__(self, msg):
         self._msg = msg
 
 
-class Yamaha:
+class Amplifier(ABC):
+    """An abstract class for amplifiers"""
+
+    def __init__(self, config: Dict):
+        self._config = config
+        self._hostname = config.get('hostname')
+        self._type = config.get('type')
+        self._initiated = False
+        super().__init__()
+
+    @abstractmethod
+    def mute(self) -> bool:
+        raise AmplifierE('not implemented')
+
+    @abstractmethod
+    def unmute(self) -> bool:
+        raise AmplifierE('unmute, not yet implemented')
+
+    @abstractmethod
+    def set_volume(self, level_percent: int) -> bool:
+        raise AmplifierE('set_volume, not yet implemented')
+
+
+class Yamaha(Amplifier):
     """Provide simplified access to Yamaha Rest API"""
 
-    def __init__(self, hostname, zone="main", api_version='v1'):
-        self._hostname = hostname
+    def __init__(self, config, zone="main", api_version='v1'):
+        super(Yamaha, self).__init__(config=config)
         self._api_version = api_version
         self._zone = zone
         self._url = '/'.join(["http:/", self._hostname, "YamahaExtendedControl", self._api_version, self._zone])
         self._status = {}
-        self._initiated = False
 
         status = self._request(ep="getStatus", args=None)
         self._status = status

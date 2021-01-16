@@ -2,5 +2,5 @@
 from .controller import RoonController
 from .token import RoonToken
 from .output import RoonOutput
-from .yamaha import Yamaha
+from .amplifier import AmplifierE, Amplifier, Yamaha
 from .config import RemoteConfig, RemoteConfigE, RemoteKeycodeMapping
