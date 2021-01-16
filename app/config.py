@@ -87,6 +87,13 @@ class RemoteConfig:
         return self._config['zone']['name']
 
     @property
+    def amplifier(self):
+        if 'amplifier' in self._config['zone'].keys():
+            return self._config['zone']['amplifier']
+        else:
+            return None
+
+    @property
     def key_mapping(self) -> RemoteKeycodeMapping:
         """return a keycode mapping object"""
         return RemoteKeycodeMapping(self._config['event_mapping'])

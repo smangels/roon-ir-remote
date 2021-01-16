@@ -17,10 +17,10 @@ class YamahaE(BaseException):
 class Yamaha:
     """Provide simplified access to Yamaha Rest API"""
 
-    def __init__(self, hostname, api_version='v1'):
+    def __init__(self, hostname, zone="main", api_version='v1'):
         self._hostname = hostname
         self._api_version = api_version
-        self._zone = "main"
+        self._zone = zone
         self._url = '/'.join(["http:/", self._hostname, "YamahaExtendedControl", self._api_version, self._zone])
         self._status = {}
         self._initiated = False
@@ -41,12 +41,6 @@ class Yamaha:
         logger.debug("generated EP: {}".format(ep))
         return ep
 
-    def mute(self) -> bool:
-        return self._mute_control(enabled=True)
-
-    def unmute(self) -> bool:
-        return self._mute_control(enabled=False)
-
     def _request(self, ep, args=None) -> Dict:
         _ep = self._generate_endpoint(endpoint=ep, args=args)
         logger.debug('sending request => %s' % _ep)
@@ -62,7 +56,15 @@ class Yamaha:
         return True
 
     def set_volume(self, level_percent: int) -> bool:
-        """SetMute?enable=false"""
+        """Set volume for a main zone"""
         absolute = (level_percent / 100) * self._status['max_volume']
         self._request(ep="setVolume", args="volume={}".format(int(absolute)))
         return True
+
+    def mute(self) -> bool:
+        """mute the main zone."""
+        return self._mute_control(enabled=True)
+
+    def unmute(self) -> bool:
+        """unmute the main zone"""
+        return self._mute_control(enabled=False)
