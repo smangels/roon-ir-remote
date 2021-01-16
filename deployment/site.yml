@@ -2,8 +2,16 @@
 
 - name: Network Getting Started First Playbook
   gather_facts: false
+  any_errors_fatal: yes
   hosts: roon
   tasks:
+
+    - name: check for flirc tool being installed
+      delegate_to: localhost
+      ansible.builtin.shell: which flirc_util
+      register: flirc_util
+      failed_when: flirc_util.rc != 0
+      changed_when: "'nonsense' in flirc_util.stdout"
 
     - name: Apt Upgrade
       apt: upgrade=dist force_apt_get=yes
@@ -67,7 +75,7 @@
         - { src: '../roon_remote.py', dest: 'roon_remote.py' }
 
     - name: Generate template
-      tags: sebman
+      tags: generate_template
       template:
         dest: "{{ installation.folder }}/app_info.json"
         src: "app_info.json.j2"
