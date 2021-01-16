@@ -8,6 +8,7 @@
 {% if amplifier is defined and amplifier.enabled == true %}
          "amplifier": {
             "type": "{{ amplifier.type }}",
+            "hostname": "{{ amplifier.hostname }}",
             "init_volume_percent": {{ amplifier.init_volume_percent }}
          },
 {% endif %}

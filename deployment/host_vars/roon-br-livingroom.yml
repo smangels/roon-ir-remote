@@ -5,4 +5,5 @@ roon:
 amplifier:
   enabled: true
   type: "Yamaha"
+  hostname: "yamaha.home.mangelsen.se"
   init_volume_percent: 25
