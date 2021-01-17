@@ -8,7 +8,7 @@
 
     - name: Install flirc_usb dependencies
       tags:
-        - flirc_usb
+        - flirc_util_deps
       ansible.builtin.apt:
         name: "{{ item }}"
       loop:
@@ -17,13 +17,19 @@
 
     - name: Copy the binary in place
       tags:
-        - flirc_usb
-      file:
+        - flirc_util
+      ansible.builtin.copy:
         src: files/flirc_util
         dest: /usr/local/bin
         mode: "0755"
         owner: root
         group: root
+
+    - name: Flirc, verify util
+      tags:
+        - flirc_util
+      shell: flirc_util version
+      changed_when: False
 
     - name: Apt Upgrade
       apt: upgrade=dist force_apt_get=yes
