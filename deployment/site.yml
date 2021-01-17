@@ -33,9 +33,9 @@
 
     - name: Flirc copy configuration file
       tags:
-        - flirc_util
+        - flirc_util_config
       ansible.builtin.copy:
-        src: "files/{{ inventory_hostname }}.flirc.conf"
+        src: "files/{{ inventory_hostname }}.fcfg"
         dest: "{{ installation.folder }}"
         owner: "{{ service.user }}"
         group: "{{ service.group }}"
