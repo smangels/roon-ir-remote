@@ -3,7 +3,6 @@ roon:
   zone_name: "Wohnzimmer"
   favorite_radio_station: "Radio Paradise: Main mix"
 amplifier:
-  enabled: true
   type: "Yamaha"
   hostname: "yamaha.home.mangelsen.se"
   init_volume_percent: 25
