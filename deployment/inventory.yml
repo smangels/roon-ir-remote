@@ -6,7 +6,6 @@ all:
       hosts:
         roon-br-livingroom:
         roon-br-children:
-        roon-br-office:
   vars:
     service:
       name: roon-remote

@@ -8,7 +8,7 @@
 
     - name: Install flirc_usb dependencies
       tags:
-        - flirc_util_deps
+        - flirc_util
       ansible.builtin.apt:
         name: "{{ item }}"
       loop:
@@ -33,7 +33,7 @@
 
     - name: Flirc copy configuration file
       tags:
-        - flirc_util_config
+        - flirc_util
       ansible.builtin.copy:
         src: "files/{{ inventory_hostname }}.flirc.conf"
         dest: "{{ installation.folder }}"
@@ -43,7 +43,10 @@
     - name: Flirc load configuration
       tags:
         - flirc_util_config
-      shell: "flirc_util loadconfig {{ installation.folder }}/{{ inventory_hostname }}.flirc.conf"
+      shell: "flirc_util loadconfig {{ installation.folder }}/{{ inventory_hostname }}.fcfg"
+      register: flirc_load_config
+      changed_when: False
+      failed_when: flirc_load_config.rc != 0
 
     - name: Apt Upgrade
       apt: upgrade=dist force_apt_get=yes
