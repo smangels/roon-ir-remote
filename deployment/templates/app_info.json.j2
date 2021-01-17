@@ -5,7 +5,7 @@
          "favorite_radio_station": "{{ roon.favorite_radio_station }}"
       },
       "event_mapping": {
-{% if amplifier is defined and amplifier.enabled == true %}
+{% if amplifier is defined %}
          "amplifier": {
             "type": "{{ amplifier.type }}",
             "hostname": "{{ amplifier.hostname }}",
