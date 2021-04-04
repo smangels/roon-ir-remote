@@ -6,6 +6,9 @@ all:
       hosts:
         roon-br-livingroom:
         roon-br-children:
+      vars:
+        ansible_python_interpreter: "/usr/bin/python3"
+
   vars:
     service:
       name: roon-remote

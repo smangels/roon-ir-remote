@@ -6,14 +6,32 @@
   hosts: roon
   tasks:
 
+    - name: Debug - zone name
+      debug:
+        msg: "{{ vars }}"
+
+    - name: Create a group
+      group:
+        name: "{{ service.group }}"
+        state: present
+
+    - name: Create a user
+      user:
+        name: "{{ service.user }}"
+        comment: Roon Remote User
+        groups: "{{ service.groups }}"
+
     - name: Install flirc_usb dependencies
       tags:
         - flirc_util
+        - apt
       ansible.builtin.apt:
-        name: "{{ item }}"
-      loop:
-        - libhidapi-hidraw0
-        - libreadline6
+        name:
+          - libhidapi-hidraw0
+          - libreadline6
+          - python3-setuptools
+          - python3-pip
+          - python3-apt
 
     - name: Copy the binary in place
       tags:
@@ -37,6 +55,7 @@
       ansible.builtin.copy:
         src: "files/{{ inventory_hostname }}.fcfg"
         dest: "{{ installation.folder }}"
+        mode: "0666"
         owner: "{{ service.user }}"
         group: "{{ service.group }}"
 
@@ -65,15 +84,6 @@
         - never
         - upgrade
 
-    - name: Debug - zone name
-      debug:
-        msg: "{{ vars }}"
-
-    - name: Create a group
-      group:
-        name: "{{ service.group }}"
-        state: present
-
     - name: Ensure service has been stopped
       ignore_errors: yes
       systemd:
@@ -81,22 +91,20 @@
         state: stopped
         enabled: false
 
-    - name: Create a user
-      user:
-        name: "{{ service.user }}"
-        comment: Roon Remote User
-        groups: "{{ service.groups }}"
-
-    - name: Remove Installation Folder
-      file:
-        dest: "{{ installation.folder }}/"
-        state: absent
-
     - name: Cleanup the APP folder
       delegate_to: localhost
       file:
         state: absent
         path: "../app/__pycache__/"
+
+    - name: Create a folder
+      tags: sebman
+      file:
+        state: directory
+        path: "{{ installation.folder }}/app/"
+        owner: "{{ service.user }}"
+        group: "{{ service.group }}"
+        mode: 0750
 
     - name: Transfer the code
       copy:
@@ -119,7 +127,10 @@
         mode: '770'
 
     - name: PIP install required packages
+      tags:
+        - pip
       pip:
+        executable: pip3
         name: [ 'roonapi', 'evdev' ]
         state: present
 
