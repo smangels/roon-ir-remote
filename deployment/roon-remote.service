@@ -1,7 +1,7 @@
 
 [Unit]
 Description=Roon IR Remote Receiver
-After=multi-user.target
+After=roon-bridge.service
 
 [Service]
 Type=simple
