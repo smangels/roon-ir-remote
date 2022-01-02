@@ -142,3 +142,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 app_info.json
+
+# Sublime files
+*.sublime-*
