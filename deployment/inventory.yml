@@ -6,6 +6,7 @@ all:
       hosts:
         roon-br-livingroom:
         roon-br-children:
+        roon-br-cx100:
       vars:
         ansible_python_interpreter: "/usr/bin/python3"
 
