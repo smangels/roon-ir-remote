@@ -4,6 +4,10 @@
   gather_facts: false
   any_errors_fatal: yes
   hosts: roon
+
+  roles:
+    - { role: flirc_util, tags: flirc_util }
+
   tasks:
 
     - name: Debug - zone name
@@ -20,52 +24,6 @@
         name: "{{ service.user }}"
         comment: Roon Remote User
         groups: "{{ service.groups }}"
-
-    - name: Install flirc_usb dependencies
-      tags:
-        - flirc_util
-        - apt
-      ansible.builtin.apt:
-        name:
-          - libhidapi-hidraw0
-          - libreadline6
-          - python3-setuptools
-          - python3-pip
-          - python3-apt
-
-    - name: Copy the binary in place
-      tags:
-        - flirc_util
-      ansible.builtin.copy:
-        src: files/flirc_util
-        dest: /usr/local/bin
-        mode: "0755"
-        owner: root
-        group: root
-
-    - name: Flirc, verify util
-      tags:
-        - flirc_util
-      shell: flirc_util version
-      changed_when: False
-
-    - name: Flirc copy configuration file
-      tags:
-        - flirc_util_config
-      ansible.builtin.copy:
-        src: "files/{{ inventory_hostname }}.fcfg"
-        dest: "{{ installation.folder }}"
-        mode: "0666"
-        owner: "{{ service.user }}"
-        group: "{{ service.group }}"
-
-    - name: Flirc load configuration
-      tags:
-        - flirc_util_config
-      shell: "flirc_util loadconfig {{ installation.folder }}/{{ inventory_hostname }}.fcfg"
-      register: flirc_load_config
-      changed_when: False
-      failed_when: flirc_load_config.rc != 0
 
     - name: Apt Upgrade
       apt: upgrade=dist force_apt_get=yes
@@ -105,6 +63,24 @@
         owner: "{{ service.user }}"
         group: "{{ service.group }}"
         mode: 0750
+
+    - name: Flirc copy configuration file
+      tags:
+        - flirc_util_config
+      ansible.builtin.copy:
+        src: "files/{{ inventory_hostname }}.fcfg"
+        dest: "{{ installation.folder }}"
+        mode: "0666"
+        owner: "{{ service.user }}"
+        group: "{{ service.group }}"
+
+    - name: Flirc load configuration
+      tags:
+        - flirc_util_config
+      shell: "flirc_util loadconfig {{ installation.folder }}/{{ inventory_hostname }}.fcfg"
+      register: flirc_load_config
+      changed_when: False
+      failed_when: flirc_load_config.rc != 0
 
     - name: Transfer the code
       copy:

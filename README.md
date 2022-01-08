@@ -51,7 +51,7 @@ to be performed.
 - copy your __public__ SSH key to the deployment target
 - install the following requirements onto the target machine
 
-    * python3, python3-pip
+    * python3, python3-pip, python3-apt
     * pip: setuptools
     * git
 
