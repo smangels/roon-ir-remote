@@ -1,4 +1,4 @@
 ---
 
 dependencies:
-  - role: flirc_util
+  - { role: flirc_util, tags: flirc_util }

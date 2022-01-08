@@ -1,9 +1,6 @@
 ---
 
 - name: Install flirc_usb dependencies
-  tags:
-    - flirc_util
-    - apt
   ansible.builtin.apt:
     name:
       - libhidapi-hidraw0
@@ -22,21 +19,17 @@
 
 - name: Fetch latest flirc_util package from internet
   register: flirc_package
-  tags:
-    - flirc_util
   ansible.builtin.get_url:
     url: http://apt.flirc.tv/arch/armhf/flirc.latest.armhf.tar.gz
     dest: /tmp
 
 - name: Unpack Flirc package
-  when: flirc_package.changed
   ansible.builtin.unarchive:
-    src: /tmp/flirc.latest.armh.tar.gz
+    remote_src: yes
+    src: /tmp/flirc.latest.armhf.tar.gz
     dest: /tmp
 
 - name: Copy the binary in place
-  tags:
-    - flirc_util
   ansible.builtin.copy:
     remote_src: yes
     src: /tmp/Flirc/flirc_util
@@ -46,8 +39,6 @@
     group: root
 
 - name: Flirc, verify util
-  tags:
-    - flirc_util
   shell: flirc_util version
   changed_when: False
 
