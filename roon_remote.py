@@ -70,11 +70,12 @@ def monitor_remote(zone: RoonOutput, dev: InputDevice, mapping: RemoteKeycodeMap
                 if zone.state == "playing":
                     zone.pause()
                 else:
+                    zone.repeat(False)
                     zone.play()
             elif event.code in mapping.to_key_code('vol_up'):
-                zone.volume_up(5)
+                zone.volume_up(2)
             elif event.code in mapping.to_key_code('vol_down'):
-                zone.volume_down(5)
+                zone.volume_down(2)
             elif event.code in mapping.to_key_code('mute'):
                 zone.mute(not zone.is_muted())
             elif event.code in mapping.to_key_code('fall_asleep'):

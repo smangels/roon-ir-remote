@@ -108,6 +108,10 @@ class RoonOutput:
     def playpause(self):
         self._api.playback_control(self.zone_id, "playpause")
 
+    def repeat(self, repeat: bool):
+        logger.debug(f"{'enable' if repeat else 'disable'} for zone {self.zone_id}")
+        self._api.repeat(self.zone_id, repeat)
+
     def play(self):
         """Start Play with current playlist"""
         self._api.playback_control(self.zone_id, "play")
