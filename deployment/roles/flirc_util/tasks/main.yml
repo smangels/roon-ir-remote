@@ -4,15 +4,15 @@
   ansible.builtin.apt:
     name:
       - libhidapi-hidraw0
-      - libreadline8
+      - libreadline7
       - python3-setuptools
       - python3-pip
       - python3-apt
 
-- name: Fix a symlink libreadline.so.6 to libreadline.so.8
+- name: Fix a symlink libreadline.so.6 to libreadline.so.7
   ansible.builtin.file:
     state: link
-    src: /usr/lib/arm-linux-gnueabihf/libreadline.so.8
+    src: /usr/lib/arm-linux-gnueabihf/libreadline.so.7
     dest: /usr/lib/arm-linux-gnueabihf/libreadline.so.6
     owner: root
     group: root
