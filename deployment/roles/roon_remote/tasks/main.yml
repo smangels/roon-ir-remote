@@ -97,7 +97,7 @@
     - pip
   pip:
     executable: pip3
-    name: [ 'roonapi', 'evdev' ]
+    name: [ 'roonapi==0.0.39', 'evdev' ]
     state: present
 
 - name: Copy systemd service file
