@@ -1,5 +1,5 @@
 
-roonapi==0.0.28
+roonapi==0.0.39
 evdev
 flake8
 pylint
