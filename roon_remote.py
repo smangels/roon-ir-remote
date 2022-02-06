@@ -81,7 +81,7 @@ def monitor_remote(zone: RoonOutput, dev: InputDevice, mapping: RemoteKeycodeMap
             elif event.code in mapping.to_key_code('fall_asleep'):
                 zone.play_playlist('wellenrauschen')
             elif event.code in mapping.to_key_code('play_radio'):
-                zone.play_radio_station(station_name="Radio Paradise: Main mix")
+                zone.play_radio_station(station_name="Radio Paradise (320k aac)")
 
             logger.debug("Received Code: %s", repr(event.code))
 
