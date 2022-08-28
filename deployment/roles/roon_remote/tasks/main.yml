@@ -66,7 +66,9 @@
   failed_when: flirc_load_config.rc != 0
 
 - name: Generate template
-  tags: generate_template
+  tags:
+    - generate_template
+    - roon_remote_src
   template:
     dest: "{{ installation.folder }}/app_info.json"
     src: "app_info.json.j2"
@@ -79,7 +81,7 @@
     - pip
   pip:
     executable: pip3
-    name: [ 'roonapi==0.0.39', 'evdev' ]
+    name: [ 'roonapi==0.1.1', 'evdev' ]
     state: present
 
 - name: Copy systemd service file
@@ -92,7 +94,7 @@
     - roon_remote_src
   block:
     - name: Ensure service has been stopped
-      ignore_errors: yes
+      ignore_errors: true
       systemd:
         name: "{{ service.name }}.service"
         state: stopped
@@ -113,14 +115,11 @@
       copy:
         src: '../roon_remote.py'
         dest: "{{ installation.folder }}/roon_remote.py"
-        owner: "{{ service.user }}"
-        group: "{{ service.group }}"
-        mode: "750"
 
     - name: Ensure correct file permissions
       file:
         recurse: yes
-        path: '{{ installation.folder }}/app/*.py'
+        path: '{{ installation.folder }}/app/'
         owner: '{{ service.user }}'
         group: '{{ service.group }}'
         mode: '0750'

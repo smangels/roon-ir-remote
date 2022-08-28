@@ -9,5 +9,5 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 
-ansible-playbook -i inventory.yml --limit "${TARGET}" --tags roon_remote_src site.yml
+ansible-playbook -i inventory.yml --diff --limit "${TARGET}" --tags roon_remote_src site.yml
 

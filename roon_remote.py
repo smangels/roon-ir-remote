@@ -12,7 +12,7 @@ from pathlib import Path
 import evdev
 from evdev import InputDevice
 
-from app import RoonController, RoonOutput, RemoteConfig, RemoteConfigE, RemoteKeycodeMapping
+from app import RoonController, RoonOutput, RemoteConfig, RemoteConfigE, RemoteKeycodeMapping, RoonControllerE
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(module)s: %(message)s')
@@ -95,6 +95,7 @@ def main():
     logger.info("starting %s", __file__)
     signal.signal(signal.SIGINT, exit_handler)
     signal.signal(signal.SIGTERM, exit_handler)
+    controller = None
 
     try:
         config = RemoteConfig(Path('app_info.json'))
@@ -113,7 +114,11 @@ def main():
 
     logging.debug('found input device: %s', event_dev)
 
-    controller = RoonController(config.app_info, Path('.roon-token'))
+    try:
+        controller = RoonController(config.app_info, Path('.roon-token'))
+    except RoonControllerE as ex:
+        logging.error("Failed to initiate the controller: %s" % ex.msg)
+
     output = controller.get_output(config.zone)
     if not output:
         logging.error('failed to find zone "{}"'.format(config.zone))

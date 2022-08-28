@@ -1,5 +1,5 @@
 
-from .controller import RoonController
+from .controller import RoonController, RoonControllerE
 from .token import RoonToken
 from .output import RoonOutput
 from .amplifier import AmplifierE, Amplifier, Yamaha
